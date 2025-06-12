@@ -1,4 +1,4 @@
 @ECHO OFF
 
 cls
-poetry run python main.py
+poetry run python src/main.py
