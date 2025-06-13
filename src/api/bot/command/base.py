@@ -5,7 +5,7 @@ from ...bot import Bot
 
 class Command(ABC):
     @abstractmethod
-    def handle(self, message: Message, bot: Bot):
+    async def handle(self, message: Message, bot: Bot):
         raise NotImplementedError()
 
     @abstractmethod
