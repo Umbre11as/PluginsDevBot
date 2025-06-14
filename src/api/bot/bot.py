@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from log import get_logger
+from api.log import get_logger
 from .keyboard_factory import KeyboardFactory
 from .keyboard import Keyboard, CallbackHandler
 from typing import Optional
