@@ -1,8 +1,10 @@
 from ...bot import Bot
 from ...bot.keyboard_factory import KeyboardFactory
 from ...bot.keyboard import CallbackHandler, Keyboard
+from ...bot.command.text import TextHandler
 from ..bot.keyboard import AiogramKeyboardFactory, AiogramCallbackManager
 from ..bot.command import AiogramCommandHandler, Command
+from ..bot.command import AiogramTextManager
 from typing import Optional
 import aiogram
 
@@ -13,6 +15,7 @@ class AiogramBot(Bot):
         self.command_handler = AiogramCommandHandler(self, self.dispatcher)
         self.keyboardfactory = AiogramKeyboardFactory()
         self.callback_manager = AiogramCallbackManager(self, self.dispatcher)
+        self.text_manager = AiogramTextManager(self, self.dispatcher)
 
     async def register_command(self, command: Command):
         self.command_handler.register(command)
@@ -37,17 +40,21 @@ class AiogramBot(Bot):
             reply_markup=reply_markup
         )
     
-    async def register_callback_handler(self, handler: CallbackHandler):
-        self.callback_manager.register(handler)
-    
     async def answer_callback(self, callback_id: str, text: str = '', show_alert: bool = False):
         await self.telegram.answer_callback_query(callback_id, text, show_alert)
     
     def keyboard_factory(self) -> KeyboardFactory:
         return self.keyboardfactory
 
+    async def register_callback_handler(self, handler: CallbackHandler):
+        self.callback_manager.register(handler)
+    
+    async def register_text_handler(self, handler: TextHandler):
+        self.text_manager.register(handler)
+    
     async def start(self):
         await super().start()
 
         self.callback_manager.setup_handlers()
+        self.text_manager.setup_handlers()
         await self.dispatcher.start_polling(self.telegram)

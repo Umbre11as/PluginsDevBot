@@ -13,6 +13,7 @@ class Shop:
     empty: str
     entry: List[str]
     button: str
+    buy_button: str
 
 @dataclass
 class MakeOrder:

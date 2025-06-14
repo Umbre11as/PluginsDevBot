@@ -2,6 +2,7 @@ from api.aiogram import AiogramBot
 from api.configs import ConfigurationManager
 from commands import StartCommand
 from shop import DatabaseShopRepository
+from callbacks import ShopTextHandler
 import configs
 
 class PluginsDevBot(AiogramBot):
@@ -24,5 +25,6 @@ class PluginsDevBot(AiogramBot):
 
     async def start(self):
         await self.register_command(StartCommand(self.messages))
+        await self.register_text_handler(ShopTextHandler(self.messages))
 
         return await super().start()
