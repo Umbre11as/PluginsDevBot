@@ -1,1 +1,1 @@
-from .shop import ShopTextHandler
+from .shop import ShopTextHandler, ShopCallbackHandler

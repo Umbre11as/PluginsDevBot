@@ -2,11 +2,11 @@ from api.aiogram import AiogramBot
 from api.configs import ConfigurationManager
 from commands import StartCommand
 from shop import DatabaseShopRepository
-from callbacks import ShopTextHandler
+from callbacks import ShopTextHandler, ShopCallbackHandler
 import configs
 
 class PluginsDevBot(AiogramBot):
-    def __init__(self, token):
+    def __init__(self, token: str):
         super().__init__(token)
         manager = ConfigurationManager('configs')
 
@@ -25,6 +25,8 @@ class PluginsDevBot(AiogramBot):
 
     async def start(self):
         await self.register_command(StartCommand(self.messages))
-        await self.register_text_handler(ShopTextHandler(self.messages))
+
+        await self.register_text_handler(ShopTextHandler(self.messages, self.shop))
+        await self.register_callback_handler(ShopCallbackHandler(self.messages, self.shop))
 
         return await super().start()

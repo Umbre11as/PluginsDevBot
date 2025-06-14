@@ -12,6 +12,7 @@ class Keyboard:
 class Shop:
     empty: str
     entry: List[str]
+    message: str
     button: str
     buy_button: str
 

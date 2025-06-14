@@ -9,7 +9,7 @@ class Placeholder:
 
     def build(self) -> str:
         text = self.text
-        for key, value in Placeholder.items():
+        for key, value in self.placeholders.items():
             text = text.replace(key, value)
         
         return text
