@@ -1,2 +1,2 @@
-from .message import *
+from .keyboard import *
 from .callback import *
