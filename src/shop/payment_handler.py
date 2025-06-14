@@ -29,10 +29,10 @@ class ShopPaymentHandler(PaymentHandler):
                 Placeholder('\n'.join(self.messages.shop.success_payment)).place('{name}', plugin.name).build(),
                 parse_mode='HTML'
             )
-                    
+            
             if os.path.exists(plugin.file_path):
-                with open(plugin.file_path, 'rb') as file:
-                    await self.bot.send_document(user_id, file, caption=Placeholder(self.messages.shop.caption).place('{name}', plugin.name).build())
+                caption = Placeholder(self.messages.shop.caption).place('{name}', plugin.name).build()
+                await self.bot.send_document(user_id, str(plugin.file_path), caption=caption)
             else:
                 await self.bot.send_message(user_id, Placeholder('\n'.join(self.messages.shop.file_not_found)).place('{operation_id}', notification.operation_id).build(), parse_mode='HTML')
     

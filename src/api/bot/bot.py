@@ -18,6 +18,10 @@ class Bot(ABC):
         raise NotImplementedError()
 
     @abstractmethod
+    async def send_document(self, user_id: int, document, caption: Optional[str] = None):
+        raise NotImplementedError()
+    
+    @abstractmethod
     def keyboard_factory(self) -> KeyboardFactory:
         raise NotImplementedError()
 

@@ -19,7 +19,11 @@ class ShopTextHandler(TextHandler):
         
         keyboard = bot.keyboard_factory().create_inline_keyboard()
         for plugin in plugins:
-            keyboard.add_button(Placeholder(self.messages.shop.button).place('{name}', plugin.name).build(), f'plugin_{plugin.name}')
+            text = Placeholder(self.messages.shop.button) \
+                .place('{name}', plugin.name) \
+                .place('{price}', str(plugin.price)) \
+                .build()
+            keyboard.add_button(text, f'plugin_{plugin.name}')
 
         await bot.send_message(message.sender_id, self.messages.shop.message, parse_mode='HTML', keyboard=keyboard)
     
@@ -36,6 +40,7 @@ class ShopCallbackHandler(CallbackHandler):
         text = Placeholder('\n'.join(self.messages.shop.entry)) \
             .place('{name}', plugin.name) \
             .place('{description}', plugin.description) \
+            .place('{price}', str(plugin.price)) \
             .build()
 
         keyboard = bot.keyboard_factory().create_inline_keyboard()
@@ -63,7 +68,7 @@ class BuyCallbackHandler(CallbackHandler):
             items=[PaymentItem(
                 id=plugin.name,
                 name=plugin.name,
-                price=Decimal('5.00')
+                price=plugin.price
             )],
             user_id=callback.from_user_id,
             order_id=f'plugin_{plugin.name}'
@@ -76,7 +81,7 @@ class BuyCallbackHandler(CallbackHandler):
 
         text = Placeholder('\n'.join(self.messages.shop.payment_info)) \
             .place('{name}', plugin.name) \
-            .place('{price}', payment_response.amount) \
+            .place('{price}', str(payment_response.amount)) \
             .build()
         await bot.edit_message(callback.from_user_id, callback.message_id, text, parse_mode='HTML', keyboard=keyboard)
     

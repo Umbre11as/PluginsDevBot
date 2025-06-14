@@ -6,7 +6,8 @@ from ...bot.payment.provider import PaymentManager
 from ..bot.keyboard import AiogramKeyboardFactory, AiogramCallbackManager
 from ..bot.command import AiogramCommandHandler, Command
 from ..bot.command import AiogramTextManager
-from typing import Optional
+from typing import Optional, Union
+from aiogram.types import FSInputFile
 import aiogram
 
 class AiogramBot(Bot):
@@ -41,6 +42,12 @@ class AiogramBot(Bot):
             parse_mode=parse_mode, 
             reply_markup=reply_markup
         )
+    
+    async def send_document(self, user_id: int, document: Union[str, FSInputFile], caption: Optional[str] = None):
+        if isinstance(document, str):
+            document = FSInputFile(document)
+        
+        await self.telegram.send_document(user_id, document, caption=caption)
     
     async def answer_callback(self, callback_id: str, text: str = '', show_alert: bool = False):
         await self.telegram.answer_callback_query(callback_id, text, show_alert)

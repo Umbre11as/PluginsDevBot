@@ -1,11 +1,11 @@
 from .repository import ShopRepository
 from .model import Plugin, PathUnion
-from typing import List, Optional
-from sqlalchemy import create_engine, Column, String, Text
+from typing import List
+from decimal import Decimal
+from sqlalchemy import create_engine, Column, String, Text, Numeric
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
-import os
 
 Base = declarative_base()
 
@@ -15,6 +15,7 @@ class PluginDB(Base):
     name = Column(String(255), primary_key=True)
     description = Column(Text)
     file_path = Column(String(500))
+    price = Column(Numeric(10, 2), nullable=False, default=0.00)
 
 class DatabaseShopRepository(ShopRepository):
     def __init__(self, db_type: str = 'sqlite', db_name: str = 'shop.db', host: str = 'localhost', port: int = 3306, user: str = 'root', password: str = ''):
@@ -31,14 +32,15 @@ class DatabaseShopRepository(ShopRepository):
         Base.metadata.create_all(self.engine)
         self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
     
-    def add_plugin(self, name: str, description: str, file_path: PathUnion):
+    def add_plugin(self, name: str, description: str, file_path: PathUnion, price: Decimal):
         with self.SessionLocal() as session:
             existing = session.query(PluginDB).filter_by(name=name).first()
             if existing:
                 existing.description = description
                 existing.file_path = str(file_path)
+                existing.price = price
             else:
-                plugin_db = PluginDB(name=name, description=description, file_path=str(file_path))
+                plugin_db = PluginDB(name=name, description=description, file_path=str(file_path), price=price)
                 session.add(plugin_db)
             
             session.commit()
@@ -54,7 +56,7 @@ class DatabaseShopRepository(ShopRepository):
         with self.SessionLocal() as session:
             plugin_db = session.query(PluginDB).filter_by(name=name).first()
             if plugin_db:
-                return Plugin(name=plugin_db.name, description=plugin_db.description, file_path=plugin_db.file_path)
+                return Plugin(name=plugin_db.name, description=plugin_db.description, file_path=plugin_db.file_path, price=Decimal(str(plugin_db.price)))
 
             return None
     
@@ -62,5 +64,5 @@ class DatabaseShopRepository(ShopRepository):
         with self.SessionLocal() as session:
             plugins_db = session.query(PluginDB).all()
             return [
-                Plugin(name=plugin.name, description=plugin.description, file_path=plugin.file_path) for plugin in plugins_db
+                Plugin(name=plugin.name, description=plugin.description, file_path=plugin.file_path, price=Decimal(str(plugin.price))) for plugin in plugins_db
             ]

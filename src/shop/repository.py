@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import List
-from .model import *
+from decimal import Decimal
+from .model import PathUnion, Plugin
 
 class ShopRepository(ABC):
     @abstractmethod
-    def add_plugin(self, name: str, description: str, file_path: PathUnion):
+    def add_plugin(self, name: str, description: str, file_path: PathUnion, price: Decimal):
         raise NotImplementedError()
 
     @abstractmethod

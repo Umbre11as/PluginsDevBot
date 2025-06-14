@@ -81,7 +81,7 @@ class PluginsDevBot(AiogramBot):
         await self.register_command(StartCommand(self.messages))
         await self.register_text_handler(ShopTextHandler(self.messages, self.shop))
         await self.register_callback_handler(ShopCallbackHandler(self.messages, self.shop))
-        await self.register_callback_handler(BuyCallbackHandler(self.shop))
+        await self.register_callback_handler(BuyCallbackHandler(self.messages, self.shop))
         
         webhook_task = asyncio.create_task(self._start_webhook_server())
         bot_task = asyncio.create_task(super().start())
