@@ -6,6 +6,7 @@ from typing import List, Optional
 class Button:
     text: str
     callback_data: Optional[str] = None
+    url: Optional[str] = None
 
 @dataclass
 class KeyboardRow:
@@ -19,11 +20,11 @@ class Keyboard(ABC):
         self.rows.append(KeyboardRow(list(buttons)))
         return self
     
-    def add_button(self, text: str, callback_data: Optional[str] = None):
+    def add_button(self, text: str, callback_data: Optional[str] = None, url: Optional[str] = None):
         if not self.rows:
             self.rows.append(KeyboardRow([]))
         
-        self.rows[-1].buttons.append(Button(text, callback_data))
+        self.rows[-1].buttons.append(Button(text, callback_data, url))
         return self
     
     @abstractmethod

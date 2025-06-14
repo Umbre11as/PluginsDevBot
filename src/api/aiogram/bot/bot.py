@@ -1,18 +1,24 @@
 from ...bot import Bot
 from ...bot.keyboard_factory import KeyboardFactory
 from ...bot.keyboard import CallbackHandler, Keyboard
+from ...bot.command.text import TextHandler
+from ...bot.payment.provider import PaymentManager
 from ..bot.keyboard import AiogramKeyboardFactory, AiogramCallbackManager
 from ..bot.command import AiogramCommandHandler, Command
-from typing import Optional
+from ..bot.command import AiogramTextManager
+from typing import Optional, Union
+from aiogram.types import FSInputFile
 import aiogram
 
 class AiogramBot(Bot):
-    def __init__(self, token: str):
+    def __init__(self, token: str, payment_manager: Optional[PaymentManager] = None):
         self.telegram = aiogram.Bot(token)
         self.dispatcher = aiogram.Dispatcher()
         self.command_handler = AiogramCommandHandler(self, self.dispatcher)
         self.keyboardfactory = AiogramKeyboardFactory()
         self.callback_manager = AiogramCallbackManager(self, self.dispatcher)
+        self.text_manager = AiogramTextManager(self, self.dispatcher)
+        self.paymentmanager = payment_manager
 
     async def register_command(self, command: Command):
         self.command_handler.register(command)
@@ -37,8 +43,11 @@ class AiogramBot(Bot):
             reply_markup=reply_markup
         )
     
-    async def register_callback_handler(self, handler: CallbackHandler):
-        self.callback_manager.register(handler)
+    async def send_document(self, user_id: int, document: Union[str, FSInputFile], caption: Optional[str] = None):
+        if isinstance(document, str):
+            document = FSInputFile(document)
+        
+        await self.telegram.send_document(user_id, document, caption=caption)
     
     async def answer_callback(self, callback_id: str, text: str = '', show_alert: bool = False):
         await self.telegram.answer_callback_query(callback_id, text, show_alert)
@@ -46,8 +55,18 @@ class AiogramBot(Bot):
     def keyboard_factory(self) -> KeyboardFactory:
         return self.keyboardfactory
 
+    async def register_callback_handler(self, handler: CallbackHandler):
+        self.callback_manager.register(handler)
+    
+    async def register_text_handler(self, handler: TextHandler):
+        self.text_manager.register(handler)
+    
+    def payment_manager(self) -> PaymentManager:
+        return self.paymentmanager
+    
     async def start(self):
         await super().start()
 
         self.callback_manager.setup_handlers()
+        self.text_manager.setup_handlers()
         await self.dispatcher.start_polling(self.telegram)

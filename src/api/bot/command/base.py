@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, TYPE_CHECKING
 from ..types import Message
-from ...bot import Bot
+
+if TYPE_CHECKING:
+    from ...bot import Bot
 
 class Command(ABC):
     @abstractmethod
-    async def handle(self, message: Message, bot: Bot):
+    async def handle(self, message: Message, bot: 'Bot'):
         raise NotImplementedError()
 
     @abstractmethod
