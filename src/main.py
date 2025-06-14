@@ -6,8 +6,8 @@ from bot import PluginsDevBot
 
 load_dotenv()
 
-yoomoney_provider = YooMoneyProvider(getenv('YOOMONEY_WALLET'), getenv('YOOMONEY_SECRET'))
-bot = PluginsDevBot(getenv('TOKEN'), yoomoney_provider)
+payment_provider = YooMoneyProvider(getenv('YOOMONEY_WALLET'), getenv('YOOMONEY_SECRET'))
+bot = PluginsDevBot(getenv('TOKEN'), payment_provider, getenv('ADMIN_PASSWORD'))
 
 async def main():
     await bot.start()

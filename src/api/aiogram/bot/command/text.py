@@ -17,7 +17,6 @@ class AiogramTextManager(TextManager):
                 for handler in self.handlers:
                     if self.matches_pattern(converted_message.text, handler.pattern()):
                         await handler.handle(converted_message, self.bot)
-                        break
     
     def matches_pattern(self, text: str, pattern: str) -> bool:
         if '*' in pattern:

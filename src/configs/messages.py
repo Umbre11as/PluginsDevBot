@@ -52,6 +52,16 @@ class Order:
     buttons: OrderButtons
 
 @dataclass
+class Admin:
+    shop: str
+    orders: str
+    back: str
+    welcome: str
+    wrong_password: str
+    enter_password: str
+    blocked: str
+
+@dataclass
 class Messages:
     start: List[str]
     keyboard: Keyboard
@@ -60,3 +70,4 @@ class Messages:
     status: StatusTranslation
     my_orders: MyOrders
     order: Order
+    admin: Admin
