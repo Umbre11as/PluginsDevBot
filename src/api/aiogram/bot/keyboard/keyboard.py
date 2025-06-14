@@ -8,7 +8,10 @@ class AiogramInlineKeyboard(InlineKeyboard):
         for row in self.rows:
             keyboard_row = []
             for button in row.buttons:
-                keyboard_row.append(aiogram.types.InlineKeyboardButton(text=button.text, callback_data=button.callback_data))
+                if button.url:
+                    keyboard_row.append(aiogram.types.InlineKeyboardButton(text=button.text, url=button.url))
+                else:
+                    keyboard_row.append(aiogram.types.InlineKeyboardButton(text=button.text, callback_data=button.callback_data))
             
             keyboard_rows.append(keyboard_row)
         

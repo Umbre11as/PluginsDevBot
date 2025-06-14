@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from api.log import get_logger
 from .keyboard_factory import KeyboardFactory
 from .keyboard import Keyboard, CallbackHandler
+from .payment import PaymentManager
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -30,6 +31,10 @@ class Bot(ABC):
     
     @abstractmethod
     async def register_text_handler(self, handler: 'TextHandler'):
+        raise NotImplementedError()
+
+    @abstractmethod
+    def payment_manager(self) -> PaymentManager:
         raise NotImplementedError()
     
     async def start(self):

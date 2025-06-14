@@ -15,6 +15,14 @@ class Shop:
     message: str
     button: str
     buy_button: str
+    not_found: str
+    pay_button: str
+    payment_info: List[str]
+    plugin_not_found_after_payment: List[str]
+    success_payment: List[str]
+    caption: str
+    file_not_found: List[str]
+    payment_failed: List[str]
 
 @dataclass
 class MakeOrder:

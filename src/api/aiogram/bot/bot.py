@@ -2,6 +2,7 @@ from ...bot import Bot
 from ...bot.keyboard_factory import KeyboardFactory
 from ...bot.keyboard import CallbackHandler, Keyboard
 from ...bot.command.text import TextHandler
+from ...bot.payment.provider import PaymentManager
 from ..bot.keyboard import AiogramKeyboardFactory, AiogramCallbackManager
 from ..bot.command import AiogramCommandHandler, Command
 from ..bot.command import AiogramTextManager
@@ -9,13 +10,14 @@ from typing import Optional
 import aiogram
 
 class AiogramBot(Bot):
-    def __init__(self, token: str):
+    def __init__(self, token: str, payment_manager: Optional[PaymentManager] = None):
         self.telegram = aiogram.Bot(token)
         self.dispatcher = aiogram.Dispatcher()
         self.command_handler = AiogramCommandHandler(self, self.dispatcher)
         self.keyboardfactory = AiogramKeyboardFactory()
         self.callback_manager = AiogramCallbackManager(self, self.dispatcher)
         self.text_manager = AiogramTextManager(self, self.dispatcher)
+        self.paymentmanager = payment_manager
 
     async def register_command(self, command: Command):
         self.command_handler.register(command)
@@ -51,6 +53,9 @@ class AiogramBot(Bot):
     
     async def register_text_handler(self, handler: TextHandler):
         self.text_manager.register(handler)
+    
+    def payment_manager(self) -> PaymentManager:
+        return self.paymentmanager
     
     async def start(self):
         await super().start()
