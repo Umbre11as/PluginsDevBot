@@ -17,14 +17,14 @@ class AiogramBot(Bot):
     async def register_command(self, command: Command):
         self.command_handler.register(command)
 
-    async def send_message(self, id: int, text: str, keyboard: Optional[Keyboard] = None):
+    async def send_message(self, id: int, text: str, keyboard: Optional[Keyboard] = None, parse_mode='MarkdownV2'):
         reply_markup = None
         if keyboard:
             reply_markup = keyboard.build()
         
-        await self.telegram.send_message(id, text, parse_mode='html', reply_markup=reply_markup)
+        await self.telegram.send_message(id, text, parse_mode=parse_mode, reply_markup=reply_markup)
 
-    async def edit_message(self, user_id: int, message_id: int, text: str, keyboard: Optional[Keyboard] = None):
+    async def edit_message(self, user_id: int, message_id: int, text: str, keyboard: Optional[Keyboard] = None, parse_mode='MarkdownV2'):
         reply_markup = None
         if keyboard:
             reply_markup = keyboard.build()
@@ -33,7 +33,7 @@ class AiogramBot(Bot):
             text=text, 
             chat_id=user_id, 
             message_id=message_id, 
-            parse_mode='html', 
+            parse_mode=parse_mode, 
             reply_markup=reply_markup
         )
     

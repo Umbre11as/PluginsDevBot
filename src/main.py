@@ -1,35 +1,37 @@
 import asyncio
 from os import getenv
 from dotenv import load_dotenv
+from api.configs import ConfigurationManager
 from api.bot import Command
 from api.bot.types import Message
 from api.bot.keyboard import Button, CallbackHandler, CallbackQuery
 from api.aiogram import AiogramBot
+import configs
 
 load_dotenv()
 
+manager = ConfigurationManager('configs')
+messages = manager.load(configs.Messages, 'messages.yml')
+
 class StartCommand(Command):
     async def handle(self, message: Message, bot: AiogramBot):
-        keyboard = bot.keyboard_factory().create_inline_keyboard()
-        keyboard.add_row(Button('Кнопка 1', 'btn1'), Button('Кнопка 2', 'btn2')).add_row(Button('Кнопка снизу', 'btn3'))
+        keyboard = bot.keyboard_factory().create_reply_keyboard()
+        keyboard.add_row(Button(messages.keyboard.make_order, 'main_make_order'))
+        keyboard.add_row(Button(messages.keyboard.shop, 'main_shop'))
+        keyboard.add_row(
+            Button(messages.keyboard.support, 'main_support'),
+            Button(messages.keyboard.my_orders, 'main_my_orders'),
+        )
 
-        await bot.send_message(message.sender_id, 'Hello, this is a /start command implementation', keyboard)
+        await bot.send_message(message.sender_id, '\n'.join(messages.start), keyboard=keyboard, parse_mode='html')
     
     def aliases(self):
         return [ 'start' ]
-
-class Button1Handler(CallbackHandler):
-    async def handle(self, callback: CallbackQuery, bot: AiogramBot):
-        await bot.edit_message(callback.from_user_id, callback.message_id, f'Нажата кнопка с callback_data={callback.data}')
-    
-    def pattern(self):
-        return 'btn*'
 
 bot = AiogramBot(getenv('TOKEN'))
 
 async def main():
     await bot.register_command(StartCommand())
-    await bot.register_callback_handler(Button1Handler())
 
     await bot.start()
 
