@@ -19,8 +19,14 @@ pip install poetry
 ```
 poetry install
 ```
-3. Fill `.env` file
-4. Start the bot
+3. Register on YooMoney, do a verification
+4. Fill `.env` file:
+```env
+TOKEN=your telegram token
+YOOMONEY_WALLET=your telegram wallet
+YOOMONEY_SECRET=your yoomoney notification secret
+```
+5. Start the bot
 ```
 poetry run python src/main.py
 ```
