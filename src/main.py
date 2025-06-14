@@ -2,7 +2,8 @@ import asyncio
 from os import getenv
 from dotenv import load_dotenv
 from api.bot import Command
-from api.bot.types import Message, Button
+from api.bot.types import Message
+from api.bot.keyboard import Button, CallbackHandler, CallbackQuery
 from api.aiogram import AiogramBot
 
 load_dotenv()
@@ -17,10 +18,19 @@ class StartCommand(Command):
     def aliases(self):
         return [ 'start' ]
 
+class Button1Handler(CallbackHandler):
+    async def handle(self, callback: CallbackQuery, bot: AiogramBot):
+        await bot.edit_message(callback.from_user_id, callback.message_id, f'Нажата кнопка с callback_data={callback.data}')
+    
+    def pattern(self):
+        return 'btn*'
+
 bot = AiogramBot(getenv('TOKEN'))
 
 async def main():
     await bot.register_command(StartCommand())
+    await bot.register_callback_handler(Button1Handler())
+
     await bot.start()
 
 if __name__ == '__main__':

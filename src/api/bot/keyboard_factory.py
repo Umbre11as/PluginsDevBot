@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from .types.keyboard import InlineKeyboard, ReplyKeyboard
+from .keyboard import InlineKeyboard, ReplyKeyboard
 
 class KeyboardFactory(ABC):
     @abstractmethod

@@ -1,5 +1,5 @@
-from ...bot.types.keyboard import InlineKeyboard, ReplyKeyboard, Button
-from ...bot.keyboard_factory import KeyboardFactory
+from ....bot.keyboard import InlineKeyboard, ReplyKeyboard
+from ....bot.keyboard_factory import KeyboardFactory
 import aiogram.types
 
 class AiogramInlineKeyboard(InlineKeyboard):
