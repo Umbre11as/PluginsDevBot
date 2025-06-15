@@ -25,6 +25,7 @@ poetry install
 TOKEN=your telegram token
 YOOMONEY_WALLET=your telegram wallet
 YOOMONEY_SECRET=your yoomoney notification secret
+ADMIN_PASSWORD=your password for /admin
 ```
 5. Start the bot
 ```
