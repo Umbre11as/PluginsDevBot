@@ -1,11 +1,11 @@
 from api.aiogram import AiogramBot
 from api.configs import ConfigurationManager
-from api.bot.keyboard import Keyboard, Button
 from api.bot.payment.provider import PaymentManager, PaymentProvider
 from api.bot.types.payment import PaymentNotification
+from database import init_db
 from commands import StartCommand, AdminCommand
 from shop import DatabaseShopRepository, ShopPaymentHandler
-from callbacks import ShopTextHandler, ShopCallbackHandler, BuyCallbackHandler, AdminPasswordTextHandler, AdminBackTextHandler
+from callbacks import ShopTextHandler, ShopCallbackHandler, BuyCallbackHandler, AdminPasswordTextHandler, AdminBackTextHandler, AdminShopTextHandler
 from keyboard import KeyboardManager
 from fastapi import FastAPI, Form, Request
 from decimal import Decimal
@@ -25,20 +25,12 @@ class PluginsDevBot(AiogramBot):
         self.app = FastAPI(title='PluginsDevBot Webhook')
         
         manager = ConfigurationManager('configs')
-        self.config = manager.load(configs.Config, 'config.yml')
         self.messages = manager.load(configs.Messages, 'messages.yml')
 
         self.keyboard_manager = KeyboardManager(self.keyboardfactory, self.messages)
 
-        db_config = self.config.database
-        self.shop = DatabaseShopRepository(
-            db_type=db_config.type,
-            db_name=db_config.path,
-            host=db_config.host,
-            port=db_config.port,
-            user=db_config.user, 
-            password=db_config.password
-        )
+        self.shop = DatabaseShopRepository()
+        init_db()
         
         shop_payment_handler = ShopPaymentHandler(self.messages, self.shop, self)
         payment_manager.add_handler(shop_payment_handler)
@@ -87,9 +79,11 @@ class PluginsDevBot(AiogramBot):
         await self.register_command(StartCommand(self.messages, self.keyboard_manager))
         await self.register_command(AdminCommand(self.messages))
 
-        await self.register_text_handler(ShopTextHandler(self.messages, self.shop))
+        await self.register_text_handler(ShopTextHandler(self.messages, self.shop, self.keyboard_manager))
+
         await self.register_text_handler(AdminPasswordTextHandler(self.messages, self.keyboard_manager, self.admin_password))
         await self.register_text_handler(AdminBackTextHandler(self.messages, self.keyboard_manager))
+        await self.register_text_handler(AdminShopTextHandler(self.messages, self.shop, self.keyboard_manager))
 
         await self.register_callback_handler(ShopCallbackHandler(self.messages, self.shop))
         await self.register_callback_handler(BuyCallbackHandler(self.messages, self.shop))

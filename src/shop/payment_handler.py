@@ -1,7 +1,7 @@
 from api.bot.payment.provider import PaymentHandler
 from api.bot.types.payment import PaymentNotification
 from api.placeholder import Placeholder
-from .repository import ShopRepository
+from .database.repository import ShopRepository
 from configs import Messages
 import os
 

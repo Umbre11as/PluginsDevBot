@@ -52,10 +52,19 @@ class Order:
     buttons: OrderButtons
 
 @dataclass
-class Admin:
+class AdminKeyboard:
     shop: str
     orders: str
     back: str
+
+@dataclass
+class AdminShop:
+    welcome: str
+
+@dataclass
+class Admin:
+    keyboard: AdminKeyboard
+    shop: AdminShop
     welcome: str
     wrong_password: str
     enter_password: str

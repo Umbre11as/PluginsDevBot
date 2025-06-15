@@ -11,4 +11,4 @@ class AdminBackTextHandler(TextHandler):
         await bot.send_message(message.sender_id, '\n'.join(self.messages.start), keyboard=self.keyboard_manager.create_main_keyboard(), parse_mode='HTML')
     
     def pattern(self):
-        return self.messages.admin.back
+        return self.messages.admin.keyboard.back
