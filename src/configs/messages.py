@@ -51,6 +51,7 @@ class Order:
     message: List[str]
     buttons: OrderButtons
 
+
 @dataclass
 class AdminKeyboard:
     shop: str
@@ -58,11 +59,43 @@ class AdminKeyboard:
     back: str
 
 @dataclass
+class AdminShopPlugin:
+    delete: str
+    give: str
+
+@dataclass
+class AdminShopEnter:
+    title: str
+    description: str
+    price: str
+    send: str
+    user: str
+    not_username: str
+
+@dataclass
+class AdminShopGive:
+    success: str
+    fail: str
+
+@dataclass
+class AdminShopCopy:
+    success: str
+    fail: str
+
+@dataclass
 class AdminShop:
     welcome: str
+    add: str
+    removed: str
+    button: str
+    plugin: AdminShopPlugin
+    enter: AdminShopEnter
+    give: AdminShopGive
+    copy: AdminShopCopy
 
 @dataclass
 class Admin:
+    no_access: str
     keyboard: AdminKeyboard
     shop: AdminShop
     welcome: str

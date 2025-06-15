@@ -6,7 +6,7 @@ from database import init_db
 from commands import StartCommand, AdminCommand
 from shop import DatabaseShopRepository, ShopPaymentHandler
 from callbacks import ShopTextHandler, ShopCallbackHandler, BuyCallbackHandler
-from admin import AdminPasswordTextHandler, AdminBackTextHandler, AdminShopTextHandler
+from admin import AdminPasswordTextHandler, AdminBackTextHandler, AdminShopMenuHandler, AdminShopStateHandler, AdminShopFileHandler, AdminAddPluginCallbackHandler, AdminPluginCallbackHandler, AdminDeletePluginCallbackHandler, AdminGivePluginCallbackHandler
 from keyboard import KeyboardManager
 from fastapi import FastAPI, Form, Request
 from decimal import Decimal
@@ -81,13 +81,20 @@ class PluginsDevBot(AiogramBot):
         await self.register_command(AdminCommand(self.messages))
 
         await self.register_text_handler(ShopTextHandler(self.messages, self.shop, self.keyboard_manager))
-
-        await self.register_text_handler(AdminPasswordTextHandler(self.messages, self.keyboard_manager, self.admin_password))
         await self.register_text_handler(AdminBackTextHandler(self.messages, self.keyboard_manager))
-        await self.register_text_handler(AdminShopTextHandler(self.messages, self.shop, self.keyboard_manager))
+        await self.register_text_handler(AdminShopMenuHandler(self.messages, self.shop, self.keyboard_manager))
+        
+        await self.register_text_handler(AdminPasswordTextHandler(self.messages, self.keyboard_manager, self.admin_password))
+        await self.register_text_handler(AdminShopStateHandler(self.messages, self.shop))
+        await self.register_text_handler(AdminShopFileHandler(self.messages, self.shop))
 
         await self.register_callback_handler(ShopCallbackHandler(self.messages, self.shop))
         await self.register_callback_handler(BuyCallbackHandler(self.messages, self.shop))
+        
+        await self.register_callback_handler(AdminAddPluginCallbackHandler(self.messages))
+        await self.register_callback_handler(AdminPluginCallbackHandler(self.messages, self.shop))
+        await self.register_callback_handler(AdminDeletePluginCallbackHandler(self.messages, self.shop))
+        await self.register_callback_handler(AdminGivePluginCallbackHandler(self.messages))
         
         webhook_task = asyncio.create_task(self._start_webhook_server())
         bot_task = asyncio.create_task(super().start())
