@@ -5,7 +5,8 @@ from api.bot.types.payment import PaymentNotification
 from database import init_db
 from commands import StartCommand, AdminCommand
 from shop import DatabaseShopRepository, ShopPaymentHandler
-from callbacks import ShopTextHandler, ShopCallbackHandler, BuyCallbackHandler, AdminPasswordTextHandler, AdminBackTextHandler, AdminShopTextHandler
+from callbacks import ShopTextHandler, ShopCallbackHandler, BuyCallbackHandler
+from admin import AdminPasswordTextHandler, AdminBackTextHandler, AdminShopTextHandler
 from keyboard import KeyboardManager
 from fastapi import FastAPI, Form, Request
 from decimal import Decimal
