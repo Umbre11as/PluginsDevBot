@@ -1,23 +1,19 @@
-from api.bot.command.text import TextHandler
-from api.bot.keyboard import CallbackHandler
 from api.placeholder import Placeholder
 from api.bot.types import Message, CallbackQuery
 from keyboard import KeyboardManager
 from shop import ShopRepository
 from configs import Messages
 from admin.wait import WaitStates
+from admin.base import AdminTextHandler, AdminCallbackHandler
 from utils import PluginSender
 from decimal import Decimal
 
-class AdminShopStateHandler(TextHandler):
+class AdminShopStateHandler(AdminTextHandler):
     def __init__(self, messages: Messages, shop: ShopRepository):
-        self.messages = messages
+        super().__init__(messages)
         self.shop = shop
 
-    async def handle(self, message: Message, bot):
-        if not WaitStates.is_admin(message.sender_id):
-            return
-
+    async def handle_admin(self, message: Message, bot):
         user_id = message.sender_id
         state = WaitStates.get_state(user_id)
         
@@ -73,20 +69,16 @@ class AdminShopStateHandler(TextHandler):
     def pattern(self):
         return '*'
 
-class AdminShopFileHandler(TextHandler):
+class AdminShopFileHandler(AdminTextHandler):
     def __init__(self, messages: Messages, shop: ShopRepository):
-        self.messages = messages
+        super().__init__(messages)
         self.shop = shop
     
-    async def handle(self, message: Message, bot):
+    async def handle_admin(self, message: Message, bot):
         user_id = message.sender_id
         state = WaitStates.get_state(user_id)
         
         if not state or state['state'] != 'admin_shop_file':
-            return
-        
-        if not WaitStates.is_admin(message.sender_id):
-            await bot.send_message(message.sender_id, self.messages.admin.no_access, parse_mode='HTML')
             return
         
         if not message.document:
@@ -114,15 +106,11 @@ class AdminShopFileHandler(TextHandler):
     def pattern(self):
         return '*'
 
-class AdminAddPluginCallbackHandler(CallbackHandler):
+class AdminAddPluginCallbackHandler(AdminCallbackHandler):
     def __init__(self, messages: Messages):
-        self.messages = messages
+        super().__init__(messages)
     
-    async def handle(self, callback: CallbackQuery, bot):
-        if not WaitStates.is_admin(callback.from_user_id):
-            await bot.send_message(callback.from_user_id, self.messages.admin.no_access, parse_mode='HTML')
-            return
-        
+    async def handle_admin(self, callback: CallbackQuery, bot):
         user_id = callback.from_user_id
         WaitStates.set_state(user_id, 'admin_shop_title', {})
         await bot.edit_message(user_id, callback.message_id, self.messages.admin.shop.enter.title, parse_mode='HTML')
@@ -130,16 +118,12 @@ class AdminAddPluginCallbackHandler(CallbackHandler):
     def pattern(self):
         return 'admin_add_plugin'
 
-class AdminPluginCallbackHandler(CallbackHandler):
+class AdminPluginCallbackHandler(AdminCallbackHandler):
     def __init__(self, messages: Messages, shop: ShopRepository):
-        self.messages = messages
+        super().__init__(messages)
         self.shop = shop
     
-    async def handle(self, callback: CallbackQuery, bot):
-        if not WaitStates.is_admin(callback.from_user_id):
-            await bot.send_message(callback.from_user_id, self.messages.admin.no_access, parse_mode='HTML')
-            return
-        
+    async def handle_admin(self, callback: CallbackQuery, bot):
         plugin_name = callback.data[13:]
         plugin = self.shop.get_plugin(plugin_name)
         
@@ -162,16 +146,12 @@ class AdminPluginCallbackHandler(CallbackHandler):
     def pattern(self):
         return 'admin_plugin_*'
 
-class AdminDeletePluginCallbackHandler(CallbackHandler):
+class AdminDeletePluginCallbackHandler(AdminCallbackHandler):
     def __init__(self, messages: Messages, shop: ShopRepository):
-        self.messages = messages
+        super().__init__(messages)
         self.shop = shop
     
-    async def handle(self, callback: CallbackQuery, bot):
-        if not WaitStates.is_admin(callback.from_user_id):
-            await bot.send_message(callback.from_user_id, self.messages.admin.no_access, parse_mode='HTML')
-            return
-        
+    async def handle_admin(self, callback: CallbackQuery, bot):
         plugin_name = callback.data[13:]
         self.shop.remove_plugin(plugin_name)
         
@@ -196,15 +176,11 @@ class AdminDeletePluginCallbackHandler(CallbackHandler):
     def pattern(self):
         return 'admin_delete_*'
 
-class AdminGivePluginCallbackHandler(CallbackHandler):
+class AdminGivePluginCallbackHandler(AdminCallbackHandler):
     def __init__(self, messages: Messages):
-        self.messages = messages
+        super().__init__(messages)
     
-    async def handle(self, callback: CallbackQuery, bot):
-        if not WaitStates.is_admin(callback.from_user_id):
-            await bot.send_message(callback.from_user_id, self.messages.admin.no_access, parse_mode='HTML')
-            return
-        
+    async def handle_admin(self, callback: CallbackQuery, bot):
         plugin_name = callback.data[11:]
         user_id = callback.from_user_id
         
@@ -214,17 +190,13 @@ class AdminGivePluginCallbackHandler(CallbackHandler):
     def pattern(self):
         return 'admin_give_*'
 
-class AdminShopMenuHandler(TextHandler):
+class AdminShopMenuHandler(AdminTextHandler):
     def __init__(self, messages: Messages, shop: ShopRepository, keyboard_manager: KeyboardManager):
-        self.messages = messages
+        super().__init__(messages)
         self.shop = shop
         self.keyboard_manager = keyboard_manager
 
-    async def handle(self, message, bot):
-        if not WaitStates.is_admin(message.sender_id):
-            await bot.send_message(message.sender_id, self.messages.admin.no_access, parse_mode='HTML')
-            return
-
+    async def handle_admin(self, message, bot):
         plugins = self.shop.list_plugins()
         keyboard = bot.keyboard_factory().create_inline_keyboard()
         
