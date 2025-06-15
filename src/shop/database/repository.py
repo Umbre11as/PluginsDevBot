@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 from decimal import Decimal
-from .model import PathUnion, Plugin
+from ..model import PathUnion, Plugin
 
 class ShopRepository(ABC):
     @abstractmethod

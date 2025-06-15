@@ -8,7 +8,9 @@ from ..bot.command import AiogramCommandHandler, Command
 from ..bot.command import AiogramTextManager
 from typing import Optional, Union
 from aiogram.types import FSInputFile
+from aiofiles import open as aio_open
 import aiogram
+import os
 
 class AiogramBot(Bot):
     def __init__(self, token: str, payment_manager: Optional[PaymentManager] = None):
@@ -49,6 +51,25 @@ class AiogramBot(Bot):
         
         await self.telegram.send_document(user_id, document, caption=caption)
     
+    async def download_file(self, file_id: str, destination_path: str):
+        from aiogram.methods import GetFile
+        from aiohttp import ClientSession
+
+        file = await self.telegram(GetFile(file_id=file_id))
+        file_url = f'https://api.telegram.org/file/bot{self.telegram.token}/{file.file_path}'
+
+        os.makedirs(os.path.dirname(destination_path), exist_ok=True)
+
+        async with ClientSession() as session:
+            async with session.get(file_url) as response:
+                if response.status != 200:
+                    raise Exception(f'Failed to download file: HTTP {response.status}')
+                
+                data = await response.read()
+
+        async with aio_open(destination_path, 'wb') as f:
+            await f.write(data)
+
     async def answer_callback(self, callback_id: str, text: str = '', show_alert: bool = False):
         await self.telegram.answer_callback_query(callback_id, text, show_alert)
     

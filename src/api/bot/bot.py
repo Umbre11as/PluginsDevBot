@@ -22,6 +22,10 @@ class Bot(ABC):
         raise NotImplementedError()
     
     @abstractmethod
+    async def download_file(self, file_id: str, destination_path: str):
+        raise NotImplementedError()
+
+    @abstractmethod
     def keyboard_factory(self) -> KeyboardFactory:
         raise NotImplementedError()
 

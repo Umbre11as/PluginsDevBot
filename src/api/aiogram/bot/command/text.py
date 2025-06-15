@@ -11,14 +11,14 @@ class AiogramTextManager(TextManager):
     def setup_handlers(self):
         @self.dispatcher.message()
         async def text_handler(message: aiogram.types.Message):
-            if message.text and not message.text.startswith('/'):
-                converted_message = Adapter.to_message(message)
-                
-                for handler in self.handlers:
-                    if self.matches_pattern(converted_message.text, handler.pattern()):
-                        await handler.handle(converted_message, self.bot)
-                        break
-    
+            if message.text and message.text.startswith('/'):
+                return
+
+            converted_message = Adapter.to_message(message)
+            for handler in self.handlers:
+                if self.matches_pattern(converted_message.text, handler.pattern()):
+                    await handler.handle(converted_message, self.bot)
+
     def matches_pattern(self, text: str, pattern: str) -> bool:
         if '*' in pattern:
             regex_pattern = pattern.replace('*', '.*')

@@ -3,13 +3,14 @@ from api.bot.keyboard import CallbackHandler
 from api.bot.types.payment import PaymentRequest, PaymentItem
 from api.placeholder import Placeholder
 from shop import ShopRepository
+from keyboard import KeyboardManager
 from configs import Messages
-from decimal import Decimal
 
 class ShopTextHandler(TextHandler):
-    def __init__(self, messages: Messages, shop: ShopRepository):
+    def __init__(self, messages: Messages, shop: ShopRepository, keyboard_manager: KeyboardManager):
         self.messages = messages
         self.shop = shop
+        self.keyboard_manager = keyboard_manager
     
     async def handle(self, message, bot):
         plugins = self.shop.list_plugins()
@@ -17,14 +18,7 @@ class ShopTextHandler(TextHandler):
             await bot.send_message(message.sender_id, self.messages.shop.empty, parse_mode='HTML')
             return
         
-        keyboard = bot.keyboard_factory().create_inline_keyboard()
-        for plugin in plugins:
-            text = Placeholder(self.messages.shop.button) \
-                .place('{name}', plugin.name) \
-                .place('{price}', str(plugin.price)) \
-                .build()
-            keyboard.add_button(text, f'plugin_{plugin.name}')
-
+        keyboard = self.keyboard_manager.create_plugins_keyboard(plugins)
         await bot.send_message(message.sender_id, self.messages.shop.message, parse_mode='HTML', keyboard=keyboard)
     
     def pattern(self):
